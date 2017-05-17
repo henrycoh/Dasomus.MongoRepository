@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
+    <Company>Dasomus</Company>
+    <Authors>Henry Oh</Authors>
   </PropertyGroup>
 
   <ItemGroup>
