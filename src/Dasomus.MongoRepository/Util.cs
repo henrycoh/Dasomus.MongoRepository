@@ -1,16 +1,10 @@
 ﻿using MongoDB.Driver;
 using ReflectionBridge.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Dasomus.MongoRepository
 {
-    /// <summary>
-    /// Internal miscellaneous utility functions.
-    /// </summary>
     internal static class Util<U>
     {
         private static IMongoDatabase GetDatabaseFromUrl(MongoUrl url)
