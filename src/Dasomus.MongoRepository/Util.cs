@@ -51,7 +51,7 @@ namespace Dasomus.MongoRepository
                 collectionName = GetCollectionNameFromType(typeof(T));
             }
 
-            if (string.IsNullOrEmpty(collectionName))
+            if (string.IsNullOrWhiteSpace(collectionName))
             {
                 throw new ArgumentException("Collection name cannot be empty for this entity");
             }
