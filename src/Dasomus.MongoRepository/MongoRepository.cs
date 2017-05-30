@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Dasomus.MongoRepository
 {
@@ -65,16 +67,16 @@ namespace Dasomus.MongoRepository
             get { return this._collection.CollectionNamespace.CollectionName; }
         }
 
-        public virtual T GetById(TKey id)
+        public T GetById(TKey id)
         {
             var filter = Builders<T>.Filter.Eq("_id", BsonValue.Create(id));
             return this._collection.Find(filter).FirstOrDefault();
         }
-        
-        public virtual T GetById(ObjectId id)
+
+        public Task<T> GetByIdAsync(TKey id, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var filter = Builders<T>.Filter.Eq("_id", id);
-            return this._collection.Find(filter).FirstOrDefault();
+            var filter = Builders<T>.Filter.Eq("_id", BsonValue.Create(id));
+            return this._collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
         }
 
         public T Add(T entity)
@@ -84,11 +86,23 @@ namespace Dasomus.MongoRepository
             return entity;
         }
 
+        public async Task<T> AddAsync(T entity, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            await this._collection.InsertOneAsync(entity, null, cancellationToken);
+
+            return entity;
+        }
+
         public void Add(IEnumerable<T> entities)
         {
             this._collection.InsertMany(entities);
         }
-        
+
+        public Task AddAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return this._collection.InsertManyAsync(entities, null, cancellationToken);
+        }
+
         public T Update(T entity)
         {
             var idFilter = Builders<T>.Filter.Eq(e => e.Id, entity.Id); //Find entity with same Id
@@ -97,19 +111,28 @@ namespace Dasomus.MongoRepository
 
             return entity;
         }
-        
+
+        public async Task<T> UpdateAsync(T entity, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var idFilter = Builders<T>.Filter.Eq(e => e.Id, entity.Id); //Find entity with same Id
+
+            var result = await this._collection.ReplaceOneAsync(idFilter, entity, new UpdateOptions { IsUpsert = true }, cancellationToken);
+
+            return entity;
+        }
+
         public void Delete(TKey id)
         {
             var filter = Builders<T>.Filter.Eq("_id", BsonValue.Create(id));
             this._collection.DeleteOne(filter);
         }
-        
-        public void Delete(ObjectId id)
+
+        public Task DeleteAsync(TKey id, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var filter = Builders<T>.Filter.Eq("_id", id);
-            this._collection.DeleteOne(filter);
+            var filter = Builders<T>.Filter.Eq("_id", BsonValue.Create(id));
+            return this._collection.DeleteOneAsync(filter, cancellationToken);
         }
-        
+
         public void Delete(Expression<Func<T, bool>> predicate)
         {
             foreach (T entity in this._collection.AsQueryable<T>().Where(predicate))
@@ -117,15 +140,33 @@ namespace Dasomus.MongoRepository
                 this.Delete(entity.Id);
             }
         }
-        
+
+        public async Task DeleteAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            foreach (T entity in this._collection.AsQueryable<T>().Where(predicate))
+            {
+                await this.DeleteAsync(entity.Id, cancellationToken);
+            }
+        }
+
         public void DeleteAll()
         {
             this._collection.DeleteMany(new BsonDocument());
         }
 
+        public Task DeleteAllAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return _collection.DeleteManyAsync(new BsonDocument(), cancellationToken);
+        }
+
         public bool Exists(Expression<Func<T, bool>> predicate)
         {
             return this._collection.AsQueryable<T>().Any(predicate);
+        }
+
+        public Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return _collection.AsQueryable<T>().AnyAsync(predicate, cancellationToken);
         }
 
         #region IQueryable<T>
