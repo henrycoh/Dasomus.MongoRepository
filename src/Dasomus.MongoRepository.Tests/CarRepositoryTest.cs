@@ -1,7 +1,9 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Xunit;
 
 namespace Dasomus.MongoRepository.Tests
 {
@@ -19,6 +21,7 @@ namespace Dasomus.MongoRepository.Tests
 
     public class CarRepositoryTest
     {
+        [Fact]
         public void AddCarTest()
         {
             var context = new MongoContext("mongodb://localhost/CarDatabase");
@@ -32,6 +35,15 @@ namespace Dasomus.MongoRepository.Tests
             };
 
             repo.Add(newCar);
+        }
+
+        [Fact]
+        public void GetCarTest()
+        {
+            var context = new MongoContext("mongodb://localhost/CarDatabase");
+            var repo = new MongoRepository<Car>(context);
+
+            var test = repo.Where(x => x.Year == 1999).First();
         }
     }
 }

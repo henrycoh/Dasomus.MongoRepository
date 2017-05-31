@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dasomus.MongoRepository", "Dasomus.MongoRepository\Dasomus.MongoRepository.csproj", "{E107429C-3E34-4D14-875E-BF91B676A0F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dasomus.MongoRepository.Tests", "Dasomus.MongoRepository.Tests\Dasomus.MongoRepository.Tests.csproj", "{C5657531-C962-429F-BF7E-83179311C299}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dasomus.MongoRepository.Tests", "Dasomus.MongoRepository.Tests\Dasomus.MongoRepository.Tests.csproj", "{EC688444-BDB1-44DA-A392-F2D643E115A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{E107429C-3E34-4D14-875E-BF91B676A0F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E107429C-3E34-4D14-875E-BF91B676A0F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E107429C-3E34-4D14-875E-BF91B676A0F0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C5657531-C962-429F-BF7E-83179311C299}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C5657531-C962-429F-BF7E-83179311C299}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C5657531-C962-429F-BF7E-83179311C299}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C5657531-C962-429F-BF7E-83179311C299}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC688444-BDB1-44DA-A392-F2D643E115A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC688444-BDB1-44DA-A392-F2D643E115A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC688444-BDB1-44DA-A392-F2D643E115A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC688444-BDB1-44DA-A392-F2D643E115A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
