@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Dasomus.MongoRepository
 {
-    public interface IMongoRepository<T, TKey> : IQueryable<T>
+    public interface IMongoRepository<T, TKey> : IMongoQueryable<T>
         where T : IMongoEntity<TKey>
     {
         IMongoCollection<T> Collection { get; }
@@ -48,7 +49,7 @@ namespace Dasomus.MongoRepository
         Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken));
     }
     
-    public interface IMongoRepository<T> : IQueryable<T>, IMongoRepository<T, ObjectId>
+    public interface IMongoRepository<T> : IMongoQueryable<T>, IMongoRepository<T, ObjectId>
         where T : IMongoEntity<ObjectId>
     { }
 }

@@ -9,6 +9,5 @@ namespace Dasomus.MongoRepository
     {
         string ConnectionString { get; set; }
         MongoUrl Url { get; set; }
-        string CollectionName { get; set; }
     }
 }

@@ -31,25 +31,13 @@ namespace Dasomus.MongoRepository
                 throw new Exception("Mongo context object is null.");
             }
 
-            if (_mongoContext.Url != null
-                && String.IsNullOrWhiteSpace(_mongoContext.CollectionName))
+            if (_mongoContext.Url != null)
             {
                 _collection = Util<TKey>.GetCollectionFromUrl<T>(_mongoContext.Url);
             }
-            else if (_mongoContext.Url != null
-                && !String.IsNullOrWhiteSpace(_mongoContext.CollectionName))
-            {
-                this._collection = Util<TKey>.GetCollectionFromUrl<T>(_mongoContext.Url, _mongoContext.CollectionName);
-            }
-            else if (!String.IsNullOrWhiteSpace(_mongoContext.ConnectionString) 
-                && String.IsNullOrWhiteSpace(_mongoContext.CollectionName))
+            else if (!String.IsNullOrWhiteSpace(_mongoContext.ConnectionString))
             {
                 _collection = Util<TKey>.GetCollectionFromConnectionString<T>(_mongoContext.ConnectionString);
-            }
-            else if (!String.IsNullOrWhiteSpace(_mongoContext.ConnectionString)
-                && !String.IsNullOrWhiteSpace(_mongoContext.CollectionName))
-            {
-                _collection = Util<TKey>.GetCollectionFromConnectionString<T>(_mongoContext.ConnectionString, _mongoContext.CollectionName);
             }
             else
             {
@@ -59,55 +47,55 @@ namespace Dasomus.MongoRepository
 
         public IMongoCollection<T> Collection
         {
-            get { return this._collection; }
+            get { return _collection; }
         }
 
         public string CollectionName
         {
-            get { return this._collection.CollectionNamespace.CollectionName; }
+            get { return _collection.CollectionNamespace.CollectionName; }
         }
 
         public T GetById(TKey id)
         {
             var filter = Builders<T>.Filter.Eq("_id", BsonValue.Create(id));
-            return this._collection.Find(filter).FirstOrDefault();
+            return _collection.Find(filter).FirstOrDefault();
         }
 
         public Task<T> GetByIdAsync(TKey id, CancellationToken cancellationToken = default(CancellationToken))
         {
             var filter = Builders<T>.Filter.Eq("_id", BsonValue.Create(id));
-            return this._collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
+            return _collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
         }
 
         public T Add(T entity)
         {
-            this._collection.InsertOne(entity);
+            _collection.InsertOne(entity);
 
             return entity;
         }
 
         public async Task<T> AddAsync(T entity, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await this._collection.InsertOneAsync(entity, null, cancellationToken);
+            await _collection.InsertOneAsync(entity, null, cancellationToken);
 
             return entity;
         }
 
         public void Add(IEnumerable<T> entities)
         {
-            this._collection.InsertMany(entities);
+            _collection.InsertMany(entities);
         }
 
         public Task AddAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this._collection.InsertManyAsync(entities, null, cancellationToken);
+            return _collection.InsertManyAsync(entities, null, cancellationToken);
         }
 
         public T Update(T entity)
         {
             var idFilter = Builders<T>.Filter.Eq(e => e.Id, entity.Id); //Find entity with same Id
 
-            var result = this._collection.ReplaceOne(idFilter, entity, new UpdateOptions { IsUpsert = true });
+            var result = _collection.ReplaceOne(idFilter, entity, new UpdateOptions { IsUpsert = true });
 
             return entity;
         }
@@ -116,7 +104,7 @@ namespace Dasomus.MongoRepository
         {
             var idFilter = Builders<T>.Filter.Eq(e => e.Id, entity.Id); //Find entity with same Id
 
-            var result = await this._collection.ReplaceOneAsync(idFilter, entity, new UpdateOptions { IsUpsert = true }, cancellationToken);
+            var result = await _collection.ReplaceOneAsync(idFilter, entity, new UpdateOptions { IsUpsert = true }, cancellationToken);
 
             return entity;
         }
@@ -124,20 +112,20 @@ namespace Dasomus.MongoRepository
         public void Delete(TKey id)
         {
             var filter = Builders<T>.Filter.Eq("_id", BsonValue.Create(id));
-            this._collection.DeleteOne(filter);
+            _collection.DeleteOne(filter);
         }
 
         public Task DeleteAsync(TKey id, CancellationToken cancellationToken = default(CancellationToken))
         {
             var filter = Builders<T>.Filter.Eq("_id", BsonValue.Create(id));
-            return this._collection.DeleteOneAsync(filter, cancellationToken);
+            return _collection.DeleteOneAsync(filter, cancellationToken);
         }
 
         public void Delete(Expression<Func<T, bool>> predicate)
         {
             foreach (T entity in this._collection.AsQueryable<T>().Where(predicate))
             {
-                this.Delete(entity.Id);
+                Delete(entity.Id);
             }
         }
 
@@ -145,13 +133,13 @@ namespace Dasomus.MongoRepository
         {
             foreach (T entity in this._collection.AsQueryable<T>().Where(predicate))
             {
-                await this.DeleteAsync(entity.Id, cancellationToken);
+                await DeleteAsync(entity.Id, cancellationToken);
             }
         }
 
         public void DeleteAll()
         {
-            this._collection.DeleteMany(new BsonDocument());
+            _collection.DeleteMany(new BsonDocument());
         }
 
         public Task DeleteAllAsync(CancellationToken cancellationToken = default(CancellationToken))
@@ -161,7 +149,7 @@ namespace Dasomus.MongoRepository
 
         public bool Exists(Expression<Func<T, bool>> predicate)
         {
-            return this._collection.AsQueryable<T>().Any(predicate);
+            return _collection.AsQueryable<T>().Any(predicate);
         }
 
         public Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default(CancellationToken))
@@ -173,27 +161,42 @@ namespace Dasomus.MongoRepository
 
         public IEnumerator<T> GetEnumerator()
         {
-            return this._collection.AsQueryable<T>().GetEnumerator();
+            return _collection.AsQueryable<T>().GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return this._collection.AsQueryable<T>().GetEnumerator();
+            return _collection.AsQueryable<T>().GetEnumerator();
+        }
+
+        public QueryableExecutionModel GetExecutionModel()
+        {
+            return _collection.AsQueryable<T>().GetExecutionModel();
+        }
+
+        public IAsyncCursor<T> ToCursor(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return _collection.AsQueryable<T>().ToCursor(cancellationToken);
+        }
+
+        public Task<IAsyncCursor<T>> ToCursorAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return _collection.AsQueryable<T>().ToCursorAsync(cancellationToken);
         }
 
         public Type ElementType
         {
-            get { return this._collection.AsQueryable<T>().ElementType; }
+            get { return _collection.AsQueryable<T>().ElementType; }
         }
 
         public Expression Expression
         {
-            get { return this._collection.AsQueryable<T>().Expression; }
+            get { return _collection.AsQueryable<T>().Expression; }
         }
         
         public IQueryProvider Provider
         {
-            get { return this._collection.AsQueryable<T>().Provider; }
+            get { return _collection.AsQueryable<T>().Provider; }
         }
 
         #endregion

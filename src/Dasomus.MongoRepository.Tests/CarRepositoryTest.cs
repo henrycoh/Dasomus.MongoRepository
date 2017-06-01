@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xunit;
+using MongoDB.Driver.Linq;
+using System.Threading.Tasks;
 
 namespace Dasomus.MongoRepository.Tests
 {
@@ -38,12 +40,12 @@ namespace Dasomus.MongoRepository.Tests
         }
 
         [Fact]
-        public void GetCarTest()
+        public async Task GetCarTest()
         {
             var context = new MongoContext("mongodb://localhost/CarDatabase");
             var repo = new MongoRepository<Car>(context);
 
-            var test = repo.Where(x => x.Year == 1999).First();
+            var test = await repo.Where(x => x.Year == 1999).FirstAsync();
         }
     }
 }
