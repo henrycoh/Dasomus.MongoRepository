@@ -4,7 +4,7 @@
     <TargetFrameworks>netcoreapp1.1;netcoreapp1.0;net451;net452</TargetFrameworks>
     <Company>Dasomus</Company>
     <Authors>Henry Oh</Authors>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

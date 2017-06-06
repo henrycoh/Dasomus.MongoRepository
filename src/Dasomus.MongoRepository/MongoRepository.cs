@@ -21,6 +21,16 @@ namespace Dasomus.MongoRepository
     {
         private IMongoCollection<T> _collection;
         private IMongoContext _mongoContext;
+
+        public MongoRepository(string connectionString)
+        {
+            _collection = Util<TKey>.GetCollectionFromConnectionString<T>(connectionString);
+        }
+
+        public MongoRepository(MongoUrl url)
+        {
+            _collection = Util<TKey>.GetCollectionFromUrl<T>(url);
+        }
         
         public MongoRepository(IMongoContext mongoContext)
         {
